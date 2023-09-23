@@ -1,5 +1,6 @@
 import wineData from "./data/Wine-Data.json";
 
+//define the structure or shape of an object
 interface WineDataItem {
   Alcohol: any;
   Ash: any;
@@ -8,33 +9,36 @@ interface WineDataItem {
   Flavanoids: any;
 }
 
-
-
-const ClassWiseStatistics=()=> {
+const ClassWiseStatistics = () => {
+  // contains data for flavanoids
   const classData: Record<string, any[]> = {};
 
-
-const calculateMean=(values: any[]): any =>{
-    const sum = values.reduce((acc, val) => acc + val, 0);
+  // calculate mean
+  const calculateMean = (values: any[]): any => {
+    //we are parsing to float coz in the array there is a string due to which NaN is coming in output
+    const sum = values.reduce((acc, val) => acc + parseFloat(val), 0);
     return sum / values.length;
-  }
-  
-  const calculateMedian=(values: any[]): any =>{
+  };
+
+  // calculate median
+  const calculateMedian = (values: any[]): any => {
     values.sort((a, b) => a - b);
     const middle = Math.floor(values.length / 2);
-  
+
     if (values.length % 2 === 0) {
       return (values[middle - 1] + values[middle]) / 2;
     } else {
       return values[middle];
     }
-  }
-  
-  const calculateMode=(values: any[]): any =>{
+  };
+
+  // calculate mode
+  const calculateMode = (values: any[]): any => {
+    // record is used to store counts for each value in values.
     const counts: Record<any, any> = {};
-    let mode:any ;
+    let mode: any;
     let maxCount = 0;
-  
+
     for (const value of values) {
       counts[value] = (counts[value] || 0) + 1;
       if (counts[value] > maxCount) {
@@ -42,14 +46,13 @@ const calculateMean=(values: any[]): any =>{
         maxCount = counts[value];
       }
     }
-  
+
     return mode;
-  }
-  
-  const calculateGamma=(data: WineDataItem[]): any[]=> {
+  };
+
+  const calculateGamma = (data: WineDataItem[]): any[] => {
     return data.map((entry) => (entry.Ash * entry.Hue) / entry.Magnesium);
-  }
-  
+  };
 
   // Group data by the "Alcohol" class
   wineData.forEach((entry) => {
@@ -62,6 +65,7 @@ const calculateMean=(values: any[]): any =>{
     classData[alcoholClass].push(entry.Flavanoids);
   });
 
+  // contains data for gamma
   const classGammaData: Record<string, any[]> = {};
 
   // Calculate "Gamma" values and group by the "Alcohol" class
@@ -80,84 +84,116 @@ const calculateMean=(values: any[]): any =>{
 
   return (
     <div className="text-black mx-auto bg-gray-100 rounded-lg shadow-md p-10 w-2/4">
-      <p className="text-2xl text-fuchsia-800">Flavanoids Statistics</p>
-      <table>
-        <thead>
-          <tr>
-            <th>Measure</th>
-            {classNames.map((className) => (
-              <th key={className}>Class {className}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Flavanoids Mean</td>
-            {classNames.map((className) => (
-              <td key={className}>
+      <p className="text-2xl text-fuchsia-800 font-semibold">
+        Flavanoids Statistics
+      </p>
+      <br />
+      <div className="grid grid-cols-4 gap-[1px] bg-black border-black border">
+        <div className="bg-gray-300">
+          <p className="text-center text-gray-900 font-semibold">Measure</p>
+        </div>
+        {classNames.map((className) => (
+          <div key={className} className="bg-gray-300">
+            <p className="text-center text-gray-900 font-semibold">
+              Class {className}
+            </p>
+          </div>
+        ))}
+
+        <div className="bg-gray-300">
+          <p className="text-center text-gray-900 font-semibold">
+            Flavanoid Mean
+          </p>
+        </div>
+        {classNames.map((className) => {
+          return (
+            <div key={className} className="bg-yellow-100">
+              <p className="text-center text-gray-700 ">
                 {calculateMean(classData[className]).toFixed(3)}
-              </td>
-            ))}
-          </tr>
-          <tr>
-            <td>Flavanoids Median</td>
-            {classNames.map((className) => (
-              <td key={className}>
-                {calculateMedian(classData[className]).toFixed(3)}
-              </td>
-            ))}
-          </tr>
-          <tr>
-            <td>Flavanoids Mode</td>
-            {classNames.map((className) => (
-              <td key={className}>
+              </p>
+            </div>
+          );
+        })}
+        <div className="bg-gray-300">
+          <p className="text-center text-gray-900 font-semibold">
+            Flavanoid Median
+          </p>
+        </div>
+        {classNames.map((className) => (
+          <div key={className} className="bg-yellow-100">
+            <p className="text-center text-gray-700 ">
+              {calculateMedian(classData[className]).toFixed(3)}
+            </p>
+          </div>
+        ))}
+        <div className="bg-gray-300">
+          <p className="text-center text-gray-900 font-semibold">
+            Flavanoid Mode
+          </p>
+        </div>
+        {classNames.map((className) => {
+          return (
+            <div key={className} className="bg-yellow-100">
+              <p className="text-center text-gray-700 ">
                 {calculateMode(classData[className]).toFixed(3)}
-              </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
-<br/>
-<br/>
-      <p className="text-2xl text-fuchsia-800">Gamma Statistics</p>
-      <table className="p-2 justify-center text-center items-center">
-        <thead>
-          <tr>
-            <th>Measure</th>
-            {classNames.map((className) => (
-              <th key={className}>Class {className}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="p-2 justify-center text-center items-center">
-          <tr className="p-2 justify-center text-center items-center">
-            <td>Gamma Mean</td>
-            {classNames.map((className) => (
-              <td key={className}>
-                {calculateMean(classGammaData[className]).toFixed(3)}
-              </td>
-            ))}
-          </tr>
-          <tr>
-            <td>Gamma Median</td>
-            {classNames.map((className) => (
-              <td key={className}>
-                {calculateMedian(classGammaData[className]).toFixed(3)}
-              </td>
-            ))}
-          </tr>
-          <tr>
-            <td>Gamma Mode</td>
-            {classNames.map((className) => (
-              <td key={className}>
-                {calculateMode(classGammaData[className]).toFixed(3)}
-              </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
+              </p>
+            </div>
+          );
+        })}
+      </div>
+      <br />
+      <br />
+      <p className="text-2xl text-fuchsia-800 font-semibold">
+        Gamma Statistics
+      </p>
+      <br />
+      <div className="grid grid-cols-4 gap-[1px] bg-black border border-black  ">
+        <div className="bg-gray-300">
+          <p className="text-center text-gray-900 font-semibold ">Measure</p>
+        </div>
+        {classNames.map((className) => (
+          <div key={className} className="bg-gray-300">
+            <p className="text-center text-gray-900 font-semibold">
+              Class {className}
+            </p>
+          </div>
+        ))}
+
+        <div className="bg-gray-300">
+          <p className="text-center text-gray-900 font-semibold">Gamma Mean</p>
+        </div>
+        {classNames.map((className) => (
+          <div key={className} className="bg-yellow-100">
+            <p className="text-center text-gray-700 ">
+              {calculateMean(classGammaData[className]).toFixed(3)}
+            </p>
+          </div>
+        ))}
+        <div className="bg-gray-300">
+          <p className="text-center text-gray-900 font-semibold">
+            Gamma Median
+          </p>
+        </div>
+        {classNames.map((className) => (
+          <div key={className} className="bg-yellow-100">
+            <p className="text-center text-gray-700 ">
+              {calculateMedian(classGammaData[className]).toFixed(3)}
+            </p>
+          </div>
+        ))}
+        <div className="bg-gray-300">
+          <p className="text-center text-gray-900 font-semibold">Gamma Mode</p>
+        </div>
+        {classNames.map((className) => (
+          <div key={className} className="bg-yellow-100">
+            <p className="text-center text-gray-700 ">
+              {calculateMode(classGammaData[className]).toFixed(3)}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
+};
 
 export default ClassWiseStatistics;
