@@ -1,4 +1,4 @@
-import ClassWiseStatistics from "./wine";
+import ClassWiseStatistics from "./components/wineStatics";
 import "./index.css";
 
 const App = () => {

@@ -1,4 +1,4 @@
-import wineData from "./data/Wine-Data.json";
+import wineData from "../data/Wine-Data.json";
 
 //define the structure or shape of an object
 interface WineDataItem {
